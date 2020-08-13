@@ -1,0 +1,10 @@
+version: '3'
+services:
+  wordpress:
+  # define the wordpress container
+  db:
+  # define the myswl container
+  loadbalancer-nginx:
+  # define the nginx-container
+networks:
+  # define the networks
