@@ -92,11 +92,108 @@ You need to provide a docker compose file with the following containers in:
 * Make wordpress and mysql configured so they do not need to ask for database host, database name, user and password (hint: look at their docker-hub pages)
 * Make a network that all containers belong to.
 
+all of the above reqirements has been handled with the docker-compose file posted here 
+``` docker 
+version: '3'
+# defines the services.
+services:
+  # define the wordpress container
+  wordpress:
+    image: wordpress
+    restart: always
+    environment:
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_PASSWORD=supersecretpassword
+      - WORDPRESS_DB_HOST=db
+    depends_on:
+      - db
+    networks:
+      - wordpressnetwork
+
+  # define the myswl container
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_USER=wordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_ROOT_PASSWORD=wordpress
+      - MYSQL_PASSWORD=supersecretpassword
+    networks:
+      - wordpressnetwork
+
+  # define the nginx-container
+  loadbalancer-nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+        - 80:80  
+    depends_on: 
+      - wordpress  
+    networks:
+      - wordpressnetwork
+    
+# defines the volumes
+#volumes:
+#  nginxvolume: {}
+
+# define the networks  
+networks:
+  wordpressnetwork:
+```
 
 Reflection tasks.
 * Describe what kind of commands you would use to delete the containers and create new ones.
+``` docker 
+docker-compose down
+``` 
+stops the containers and removes them maybe trow in a 'docker system prune' for good measure to be sure all that is not currently running gets wiped. 
+
+``` docker 
+docker-compose up
+``` 
+creates new ones
+
 * Describe where you would define what exact version of mysql docker should use?
+``` docker 
+  # define the myswl container
+  db:
+    image: mysql:5.7 # right here, mysql version 5.7
+    restart: always
+    environment:
+``` 
+specify the images tag for the exact version i want to use.
+
 * What commands will give you the ip addresses of the containers in the described network.
+
+with the following command i totally did not find on stack overflow.
+```
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id 
+```
+to find the containers id user `docker ps`
+
+``` 
+[ubuntu@academysdu-instance29 2 ]$ docker ps
+CONTAINER ID        IMAGE                                ...                                              
+1f0ace3833ec        nginx                                ...
+5fa171d1e17e        wordpress                            ...
+920d4e41b6c9        mysql:5.7                            ...
+
+```
+then use the id's you dont need to type them all just enought to be unique, 2 characters was enough.
+
+```
+[ubuntu@academysdu-instance29 2 ]$ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 1f
+172.20.0.4
+[ubuntu@academysdu-instance29 2 ]$ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 5f
+172.20.0.3
+[ubuntu@academysdu-instance29 2 ]$ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 92
+172.20.0.2
+
+```
+
 
 ## Task 3. Finding base images on Docker Hub
 
