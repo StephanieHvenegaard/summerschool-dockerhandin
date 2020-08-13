@@ -1,26 +1,52 @@
 version: '3'
+# defines the services.
 services:
   # define the wordpress container
-  wordpress_container:
+  wordpress:
     image: wordpress
+    restart: always
     ports:
-      - 8080:80
+      - 8000:80
     environment:
+	    - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_HOST=mysql_container
+      - WORDPRESS_DB_PASSWORD=supersecretpassword
+      - WORDPRESS_DB_HOST=db
     depends_on:
-      - mysql_container
+      - db
+    networks:
+      - wordpressnetwork
+
   # define the myswl container
-  mysql_container:
+  db:
     image: mysql:5.7
+    restart: always
     environment:
+      - MYSQL_USER=wordpress
+      - MYSQL_DATABASE=wordpress
       - MYSQL_ROOT_PASSWORD=wordpress
+      - MYSQL_PASSWORD=supersecretpassword
+    networks:
+      - wordpressnetwork
+
   # define the nginx-container
   loadbalancer-nginx:
     image: nginx
-    
-  
+    volumes:
+      - .d/default.conf
+      - nginxvolume:/etc/nginx/conf
+    networks:
+      - wordpressnetwork
+    dependes_on:
+      -wordpress
+    ports:
+      -80:80
+# defines the volumes
+#volumes:
+#  nginxvolume: {}
+
+# define the networks  
 networks:
-  # define the networks
+  wordpressnetwork:
 
 
