@@ -93,11 +93,9 @@ You need to provide a docker compose file with the following containers in:
 * Make a network that all containers belong to.
 
 
-
+Reflection tasks.
 * Describe what kind of commands you would use to delete the containers and create new ones.
-
 * Describe where you would define what exact version of mysql docker should use?
-
 * What commands will give you the ip addresses of the containers in the described network.
 
 ## Task 3. Finding base images on Docker Hub

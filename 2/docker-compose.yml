@@ -1,10 +1,26 @@
 version: '3'
 services:
-  wordpress:
   # define the wordpress container
-  db:
+  wordpress_container:
+    image: wordpress
+    ports:
+      - 8080:80
+    environment:
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_HOST=mysql_container
+    depends_on:
+      - mysql_container
   # define the myswl container
-  loadbalancer-nginx:
+  mysql_container:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=wordpress
   # define the nginx-container
+  loadbalancer-nginx:
+    image: nginx
+    
+  
 networks:
   # define the networks
+
+
