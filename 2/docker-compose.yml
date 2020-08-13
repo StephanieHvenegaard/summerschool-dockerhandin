@@ -32,6 +32,8 @@ services:
   # define the nginx-container
   loadbalancer-nginx:
     image: nginx
+    ports:
+      - 80:80
     volumes:
       - .d/default.conf
       - nginxvolume:/etc/nginx/conf
@@ -39,8 +41,7 @@ services:
       - wordpressnetwork
     dependes_on:
       - wordpress
-    ports:
-      -80:80
+    
 # defines the volumes
 #volumes:
 #  nginxvolume: {}
