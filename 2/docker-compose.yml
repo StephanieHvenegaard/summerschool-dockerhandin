@@ -39,7 +39,7 @@ services:
     depends_on: 
       - wordpress  
     networks:
-      - mynetwork
+      - wordpressnetwork
     
 # defines the volumes
 #volumes:
